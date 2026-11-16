@@ -5,7 +5,6 @@ class Chat():
         self.chat_hist=[SystemMessage(content=system_prompt)]
         self.human_message=None
         self.ai_message=None
-        self.chat_prompt=None        
     def add_human_message(self,human_message:str):
         self.chat_hist.append(HumanMessage(content=human_message))
         self.human_message=human_message
