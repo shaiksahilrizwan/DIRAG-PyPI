@@ -2,7 +2,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from datetime import datetime
 import os
 import json
-from exceptions import SessionSaveError
+from exceptions import SessionSaveError,InvalidSession
 class Chat():
     "Chat Class to handel Chat History and more"
     def __init__(self,system_prompt:str):
@@ -30,3 +30,17 @@ class Chat():
                 json.dump(self.writable_chat_hist,fp,ensure_ascii=False)
         except Exception as e:
             raise SessionSaveError('Unable to Save Session')
+    def load_session(session_id:str):
+        try:
+            data=None
+            with open(f'{os.getcwd()}'+'\\sessions\\'+{session_id}+'.json','r+', encoding='utf-8') as fp:
+                data=json.load(fp)
+            if data:
+                for key,value in data:
+                    print((key,value))
+            else:
+                raise InvalidSession('No Session Data Found !')
+        except FileNotFoundError as e:
+            raise InvalidSession('Session not found')
+        except json.JSONDecodeError as e:
+            raise InvalidSession('Corrupt Session Data')
