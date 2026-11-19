@@ -5,8 +5,10 @@ import json
 from exceptions import SessionSaveError,InvalidSession
 class Chat():
     "Chat Class to handel Chat History and more"
-    def __init__(self,system_prompt:str):
-        self.chat_hist=[('system',system_prompt)]
+    def __init__(self,system_prompt:str=None):
+        self.chat_hist=[]
+        if system_prompt:
+            self.chat_hist=[('system',system_prompt)]
         self.human_message=None
         self.ai_message=None
         self.writable_chat_hist=[]
@@ -30,14 +32,23 @@ class Chat():
                 json.dump(self.writable_chat_hist,fp,ensure_ascii=False)
         except Exception as e:
             raise SessionSaveError('Unable to Save Session')
-    def load_session(session_id:str):
+    def load_session(self,session_id:str):
         try:
             data=None
-            with open(f'{os.getcwd()}'+'\\sessions\\'+{session_id}+'.json','r+', encoding='utf-8') as fp:
+            print(f'{os.getcwd()}'+"\\sessions\\"+session_id+".json")
+            with open(f'{os.getcwd()}'+'\\sessions\\'+session_id+'.json','r+', encoding='utf-8') as fp:
                 data=json.load(fp)
             if data:
-                for key,value in data:
-                    print((key,value))
+                for element in data: 
+                    for key,value in element.items():
+                        if key=='system':
+                            self.chat_hist.append((key,value))
+                        if key=='ai':
+                            self.add_ai_message((key,value))
+                        elif key=='human':
+                            self.add_human_message((key,value))
+                        else:
+                            pass
             else:
                 raise InvalidSession('No Session Data Found !')
         except FileNotFoundError as e:
