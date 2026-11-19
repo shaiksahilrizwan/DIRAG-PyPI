@@ -7,7 +7,21 @@ from ollama import ResponseError
 from rich.prompt import Prompt
 from rich.panel import Panel
 from rich.console import Console
-def main(session_id:str=None):
+from typing import Optional
+import typer
+import click
+
+app = typer.Typer(no_args_is_help=True)
+
+
+@app.callback()
+def main() -> None:
+    """DIRAG command line interface."""
+    return None
+
+@app.command()
+def chat(session_id: str | None = typer.Option(None, "--session")
+):
     loader=ConfigLoader()
     try:
         loader=ConfigLoader()
@@ -49,7 +63,7 @@ def main(session_id:str=None):
         if e.status_code == 400 and 'exceeds the available context size' in e.error:
             print('Context window exceeded! Use new chat!')
         else:
-            print(f'Ollama API error: {e.error}')
+            print(f'Ollama API error: {str(e)}')
     except Exception as e:
         print(f'Error Occurred: {str(e)}')
     # def existing_chat(session_id:str):
@@ -57,4 +71,4 @@ def main(session_id:str=None):
     #     chat_context.save_new_session()
 
 if __name__=='__main__':
-    main('20261119_144556')
+    app()
