@@ -7,7 +7,7 @@ from ollama import ResponseError
 from rich.prompt import Prompt
 from rich.panel import Panel
 from rich.console import Console
-def main():
+def main(session_id:str=None):
     loader=ConfigLoader()
     try:
         loader=ConfigLoader()
@@ -17,7 +17,11 @@ def main():
         else:
             raise InvalidConfigJson('Malformed Config JSON can not start the chat')
         llm=ChatOllama(base_url=config['ollama_url'],model=config['model'])
-        chat_context=Chat(system_prompt="You are Useful AI Assistent")
+        if session_id:
+            chat_context=Chat()
+            chat_context.load_session(session_id)
+        else:
+            chat_context=Chat(system_prompt="You are Useful AI Assistent")
         parser=StrOutputParser()
         #Chat Loop
         while True:
@@ -35,6 +39,8 @@ def main():
                                 title='AI',
                                 border_style="green"
                             ))
+            print(chat_context.writable_chat_hist)
+            print(chat_context.chat_hist)
     except InvalidDictKeys as e:
         print('Invalid json keys In Configuration file check it and re-run')
     except FileNotFoundError as e:
@@ -46,5 +52,9 @@ def main():
             print(f'Ollama API error: {e.error}')
     except Exception as e:
         print(f'Error Occurred: {str(e)}')
+    # def existing_chat(session_id:str):
+    # finally:
+    #     chat_context.save_new_session()
+
 if __name__=='__main__':
-    main()
+    main('20261119_144556')

@@ -7,11 +7,13 @@ class Chat():
     "Chat Class to handel Chat History and more"
     def __init__(self,system_prompt:str=None):
         self.chat_hist=[]
+        self.writable_chat_hist=[]
         if system_prompt:
             self.chat_hist=[('system',system_prompt)]
+            self.writable_chat_hist=[{'system':system_prompt}]
         self.human_message=None
         self.ai_message=None
-        self.writable_chat_hist=[]
+        self.session_id=None
     def add_human_message(self,human_message:str):
         self.chat_hist.append(('human',human_message))
         self.human_message=human_message
@@ -28,9 +30,15 @@ class Chat():
         if not(os.path.isdir('sessions')):
             os.mkdir('sessions')
         try:
-            with open(f'{os.getcwd()}'+'\\sessions\\'+datetime.now().strftime("%Y%m%d_%H%M%S")+'.json','w+') as fp:
-                json.dump(self.writable_chat_hist,fp,ensure_ascii=False)
+            if self.session_id:
+                with open(f'{os.getcwd()}'+'\\sessions\\'+self.session_id+'.json','w+', encoding='utf-8') as fp:
+                    json.dump(self.writable_chat_hist,fp,ensure_ascii=False)
+
+            else:
+                with open(f'{os.getcwd()}'+'\\sessions\\'+datetime.now().strftime("%Y%m%d_%H%M%S")+'.json','w+',encoding='utf-8') as fp:
+                    json.dump(self.writable_chat_hist,fp,ensure_ascii=False)
         except Exception as e:
+            print(str(e))
             raise SessionSaveError('Unable to Save Session')
     def load_session(self,session_id:str):
         try:
@@ -42,13 +50,15 @@ class Chat():
                 for element in data: 
                     for key,value in element.items():
                         if key=='system':
-                            self.chat_hist.append((key,value))
-                        if key=='ai':
-                            self.add_ai_message((key,value))
+                            self.chat_hist.append(('system',value))
+                            self.writable_chat_hist({'system':value})
+                        elif key=='ai':
+                            self.add_ai_message(value)
                         elif key=='human':
-                            self.add_human_message((key,value))
+                            self.add_human_message(value)
                         else:
                             pass
+                self.session_id=session_id
             else:
                 raise InvalidSession('No Session Data Found !')
         except FileNotFoundError as e:
