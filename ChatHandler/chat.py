@@ -51,7 +51,7 @@ class Chat():
                     for key,value in element.items():
                         if key=='system':
                             self.chat_hist.append(('system',value))
-                            self.writable_chat_hist({'system':value})
+                            self.writable_chat_hist.append({'system':value})
                         elif key=='ai':
                             self.add_ai_message(value)
                         elif key=='human':

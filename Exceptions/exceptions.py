@@ -10,3 +10,12 @@ class InvalidSession(Exception):
 class SessionSaveError(Exception):
     """Raised when unable to save Session"""
     pass
+class NoDocsFound(Exception):
+    """Raised when no documents found/Empty Documnets for embedding"""
+    pass
+class VectorStoreSaveError(Exception):
+    """Raised when unable to save docs in Vector store"""
+    pass
+class VectorSearchFail(Exception):
+    """Raised when Vector Search Fails"""
+    pass

@@ -34,6 +34,19 @@ def chat(session_id: str | None = typer.Option(None, "--session")
         if session_id:
             chat_context=Chat()
             chat_context.load_session(session_id)
+            for msgs in chat_context.writable_chat_hist:
+                print(msgs)
+                for key,value in msgs.items():
+                    if key=='human':
+                        console.print(f'[bold cyan]You:[/]{value}')
+                    elif key=='ai':
+                        console.print( Panel(
+                                                        value,
+                                                        title='AI',
+                                                        border_style="green"
+                                                    ))
+                    else:
+                        continue
         else:
             chat_context=Chat(system_prompt="You are Useful AI Assistent")
         parser=StrOutputParser()
