@@ -90,11 +90,11 @@ def chat(session_id: str | None = typer.Option(None, "--session")
             chat_context.add_human_message(human_message)
             if isRagSession:
                 prompt=PromptTemplate(template="""The User query is :{chat_message} and there is a vector store that contains information related to user query and you need to classify weather this query needs additional information retireval make it strict because 
-                                            each retrieval costs money so if there is 50 percent chance 
-                                        that normal llm without extra context can answer the question then no need to exxtra source information and give the response in {format_instructions}""",input_variables=['chat_message'],partial_variables={'format_instructions':classifier_parser.get_format_instructions()})
+                                            each retrieval costs money so if there is 90 percent chance 
+                                        that normal llm without extra context can answer the question then no need to extra source information and give the response in {format_instructions}""",input_variables=['chat_message'],partial_variables={'format_instructions':classifier_parser.get_format_instructions()})
                 prompt=prompt.invoke({'chat_message':chat_context.human_message})
                 res=llm.invoke(prompt)
-                print(res)
+                # print(res)
                 classifier_result=classifier_parser.parse(res.content)
                 if classifier_result.isRAGRequired:
                     context_docs=vc.get_docs(classifier_result.query,k=2)
