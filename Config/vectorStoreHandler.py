@@ -1,34 +1,44 @@
+from pathlib import Path
+
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
-from Exceptions.exceptions import VectorStoreSaveError,VectorSearchFail
-# from Config.configLoader import ConfigLoader
-import os
-import json
-class VectorStoreHandler():
-    def __init__(self,embed_model:OllamaEmbeddings,collection_name:str):
-        self.embed_model=embed_model
+
+try:
+    from ..Exceptions.exceptions import VectorStoreSaveError, VectorSearchFail
+except ImportError:
+    from Exceptions.exceptions import VectorStoreSaveError, VectorSearchFail
+
+
+class VectorStoreHandler:
+    def __init__(
+        self,
+        embed_model: OllamaEmbeddings,
+        collection_name: str,
+    ):
+        self.embed_model = embed_model
+        self.collection_name = collection_name
+        store_path = Path.cwd() / "vstore"
+        store_path.mkdir(exist_ok=True)
         try:
-            self.vector_store=Chroma(embedding_function=self.embed_model,persist_directory=os.getcwd()+'\\vstore',collection_name=collection_name)
-        except Exception as e:
-            raise VectorStoreSaveError("Unable to start Vector Store Instance")
-        self.collection_name=collection_name
-    def save_docs(self,docs):#,collection_name):
-        if not(os.path.isdir('vstore')):
-            os.mkdir('vstore')
+            self.vector_store = Chroma(
+                embedding_function=self.embed_model,
+                persist_directory=str(store_path),
+                collection_name=collection_name,
+            )
+        except Exception as exc:
+            raise VectorStoreSaveError("Unable to start vector store") from exc
+
+    def save_docs(self, docs):
         try:
-            # self.collection_name=collection_name
-            #self.vector_store=Chroma(embedding_function=self.embed_model,persist_directory=os.getcwd()+'/vstore',collection_name=self.collection_name)
             self.vector_store.add_documents(docs)
-            # config=ConfigLoader()
-            # old_config=config.get_config()
-            # old_config['collection_name']=collection_name
-            # with open(f'{os.getcwd()}'+'\\dirag.json','r+') as fp:
-            #     json.dump(old_config)
-        except Exception as e:
-            raise VectorStoreSaveError('Unable to Save Documents in Vector Store')
-    def get_docs(self,search_query:str,no_records:int):
+        except Exception as exc:
+            raise VectorStoreSaveError("Unable to save documents") from exc
+
+    def get_docs(self, search_query: str, no_records: int):
         try:
-            return self.vector_store.similarity_search(query=search_query,k=no_records)
-        except Exception as e:
-            raise VectorSearchFail("Failed to get relavent Info")
-                    
+            return self.vector_store.similarity_search(
+                query=search_query,
+                k=no_records,
+            )
+        except Exception as exc:
+            raise VectorSearchFail("Failed to retrieve relevant information") from exc

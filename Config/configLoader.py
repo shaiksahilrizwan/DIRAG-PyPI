@@ -1,17 +1,37 @@
 import json
-from Exceptions.exceptions import InvalidDictKeys
-class ConfigLoader():
-    """Class to handel ollama configurations via json config file"""
+from pathlib import Path
+
+try:
+    from ..Exceptions.exceptions import InvalidDictKeys
+except ImportError:
+    from Exceptions.exceptions import InvalidDictKeys
+
+
+class ConfigLoader:
+    """Handle Ollama configuration stored in dirag.json."""
+
     def __init__(self):
+        self.config = None
+        config_path = Path.cwd() / "dirag.json"
         try:
-            with open('dirag.json','r+') as fp:
-                self.config=json.load(fp)
-        except json.JSONDecodeError as e:
-            self.config=None
+            with config_path.open("r", encoding="utf-8") as fp:
+                self.config = json.load(fp)
+        except FileNotFoundError:
+            raise
+        except json.JSONDecodeError:
+            self.config = None
+
     def get_config(self):
-            """return configuration json as python dictionary"""
-            try:
-                # return  {'ollama_url':self.config['ollama_url'],'model':self.config['model']}
-                return self.config
-            except KeyError as e:
-                 raise InvalidDictKeys("JSON Configuration error check config file")
+        """Return the configuration JSON as a dictionary."""
+        try:
+            if not isinstance(self.config, dict):
+                raise InvalidDictKeys("Invalid configuration JSON")
+            required = {"ollama_url", "model"}
+            missing = required.difference(self.config)
+            if missing:
+                raise InvalidDictKeys(
+                    "Missing configuration keys: " + ", ".join(sorted(missing))
+                )
+            return self.config
+        except KeyError as exc:
+            raise InvalidDictKeys("JSON configuration error") from exc

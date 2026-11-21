@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dirag"
+version = "0.1.0"
+description = "A local CLI for Ollama chat and PDF-powered RAG"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "DIRAG contributors"}]
+keywords = ["ollama", "rag", "langchain", "cli", "pdf"]
+dependencies = [
+  "langchain-core",
+  "langchain-community",
+  "langchain-ollama",
+  "langchain-chroma",
+  "langchain-text-splitters",
+  "ollama",
+  "pydantic",
+  "rich",
+  "typer",
+  "pypdf",
+]
+
+[project.scripts]
+dirag = "cli:app"
+
+[tool.setuptools]
+include-package-data = true
+py-modules = ["cli", "main"]
+
+[tool.setuptools.packages.find]
+where = [""]
+include = ["ChatHandler", "ChatHandler.*", "Config", "Config.*", "Exceptions", "Exceptions.*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json"]
