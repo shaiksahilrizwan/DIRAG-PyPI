@@ -11,6 +11,7 @@ class ConfigLoader():
     def get_config(self):
             """return configuration json as python dictionary"""
             try:
-                return  {'ollama_url':self.config['ollama_url'],'model':self.config['model']}
+                # return  {'ollama_url':self.config['ollama_url'],'model':self.config['model']}
+                return self.config
             except KeyError as e:
                  raise InvalidDictKeys("JSON Configuration error check config file")

@@ -1,4 +1,4 @@
-from docLoader import DocLoader
+from Config.docLoader import DocLoader
 from langchain_community.document_loaders import DirectoryLoader,PyPDFLoader
 
 class DirectoryLoaderPDF(DocLoader):
