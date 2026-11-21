@@ -114,8 +114,8 @@ def chat(session_id: str | None = typer.Option(None, "--session")
                                 title='AI',
                                 border_style="green"
                             ))
-            print(chat_context.writable_chat_hist)
-            print(chat_context.chat_hist)
+            # print(chat_context.writable_chat_hist)
+            # print(chat_context.chat_hist)
     except InvalidDictKeys as e:
         print('Invalid json keys In Configuration file check it and re-run')
     except FileNotFoundError as e:
